@@ -1,0 +1,40 @@
+version: '2'
+
+services:
+  nginx:
+    image: nginx
+    ports:
+      - '80:80'
+    volumes:
+      - /c/Users/docker-lempstack/logs:/var/log/nginx
+      - /c/Users/docker-lempstack/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - /c/Users/docker-lempstack/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - /c/Users/docker-lempstack/www:/var/www/html
+    restart: always
+
+  php:
+    build:
+      context: .
+      dockerfile: php.Dockerfile
+    image: php-swap
+    ports:
+      - "9000:9000"
+    volumes:
+      - /c/Users/docker-lempstack/www:/var/www/html
+      - /c/Users/docker-lempstack/php/php.ini:/usr/local/etc/php/php.ini
+      - /c/Users/docker-lempstack/phplogs:/var/log/php
+
+  mysql:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: amy
+      MYSQL_USER: root
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - '8080:80'
